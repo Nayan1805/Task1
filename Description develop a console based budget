@@ -1,0 +1,101 @@
+import os
+import pickle
+from datetime import datetime
+
+class Task:
+    def __init__(self, description, priority='medium', due_date=None, completed=False):
+        self.description = description
+        self.priority = priority
+        self.due_date = due_date
+        self.completed = completed
+
+class ToDoList:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, task):
+        self.tasks.append(task)
+
+    def remove_task(self, index):
+        if 0 <= index < len(self.tasks):
+            del self.tasks[index]
+            print("Task removed successfully.")
+        else:
+            print("Invalid index. No task removed.")
+
+    def mark_as_completed(self, index):
+        if 0 <= index < len(self.tasks):
+            self.tasks[index].completed = True
+            print("Task marked as completed.")
+        else:
+            print("Invalid index. No task marked as completed.")
+
+    def list_tasks(self):
+        if self.tasks:
+            print("Task List:")
+            for i, task in enumerate(self.tasks):
+                print(f"{i}. [{task.priority}] {task.description} - Due: {task.due_date} - Completed: {task.completed}")
+        else:
+            print("No tasks found.")
+
+    def save_tasks(self, filename):
+        with open(filename, 'wb') as f:
+            pickle.dump(self.tasks, f)
+        print("Tasks saved successfully.")
+
+    def load_tasks(self, filename):
+        if os.path.exists(filename):
+            with open(filename, 'rb') as f:
+                self.tasks = pickle.load(f)
+            print("Tasks loaded successfully.")
+        else:
+            print("No saved tasks found.")
+
+def main():
+    filename = "tasks.pkl"
+    todo_list = ToDoList()
+    if os.path.exists(filename):
+        todo_list.load_tasks(filename)
+
+    while True:
+        print("\nCommand Options:")
+        print("1. Add Task")
+        print("2. Remove Task")
+        print("3. Mark Task as Completed")
+        print("4. List Tasks")
+        print("5. Save Tasks")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            description = input("Enter task description: ")
+            priority = input("Enter priority (high, medium, low): ")
+            due_date = input("Enter due date (YYYY-MM-DD): ")
+            task = Task(description, priority, due_date)
+            todo_list.add_task(task)
+
+        elif choice == '2':
+            index = int(input("Enter index of task to remove: "))
+            todo_list.remove_task(index)
+
+        elif choice == '3':
+            index = int(input("Enter index of task to mark as completed: "))
+            todo_list.mark_as_completed(index)
+
+        elif choice == '4':
+            todo_list.list_tasks()
+
+        elif choice == '5':
+            todo_list.save_tasks(filename)
+
+        elif choice == '6':
+            todo_list.save_tasks(filename)
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
